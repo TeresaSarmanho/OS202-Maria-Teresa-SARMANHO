@@ -66,8 +66,9 @@ k,j,i             | 1.00822 | 2123.74 | 2105.18
 Do ponto de vista das operaçoes aritmeticas, o tempo deveria ser o mesmo. Porém, os acessos de memória mudam o tempo de retorno, e sua complexidade deve ser considerada para o cálculo da eficiência do código. Isso passa a importar com a multiplicação dos cores das máquinas e da utilização dos diferentes níveis de memória cache.
 
 Buscar fazer as operaçoes com continuidade de memoria para não ter que buscar várias informações em lugares diferentes.
-É mais rápido percorrer em colunas, ja que os dados estao salvos em colunas.
-Neste caso, 
+Os dados de matrizes geralmente são salvos em colunas. Por isso, é mais rápido fazer as operações em colunas. Logo, a execução será mais rápida se aumentarmos a quantidade de operações em colunas. 
+
+(Explicar as operações por colunas e os saltos feitos para acessar os elementos do produto caso seja feito por coluna ou por linha) 
 
 
 ### OMP sur la meilleure boucle 

@@ -75,53 +75,36 @@ Il est préférable de réaliser les opérations avec une continuité de mémoir
 
 `make TestProduct.exe && OMP_NUM_THREADS=8 ./TestProduct.exe 1024`
 
-  OMP_NUM         | MFlops  | MFlops(n=2048) | MFlops(n=512)  | MFlops(n=4096)
-------------------|---------|----------------|----------------|---------------
-1                 |  |
-2                 |  |
-3                 |  |
-4                 |  |
-5                 |  |
-6                 |  |
-7                 |  |
-8                 |  |
-
-
+ 8 threads: 0.417000 secondes, Acceleration = 3.738
+ 7 threads: 0.430886 secondes, Acceleration = 3.617
+ 6 threads: 0.473715 secondes, Acceleration = 3.290
+ 5 threads: 0.513591 secondes, Acceleration = 3.057
+ 2 threads: 0.912695 secondes, Acceleration = 1.707
+ 1 thread: 1.65728 secondes, Acceleration = 0.940
 
 
 ### Produit par blocs
 
 `make TestProduct.exe && ./TestProduct.exe 1024`
 
-  szBlock         | MFlops  | MFlops(n=2048) | MFlops(n=512)  | MFlops(n=4096)
-------------------|---------|----------------|----------------|---------------
-origine (=max)    |  |
-32                |  |
-64                |  |
-128               |  |
-256               |  |
-512               |  | 
-1024              |  |
-
-
+La taille de bloc optimale été 256 et le temps employé 0.651482 secondes
 
 
 ### Bloc + OMP
 
+Avec la parallélisation par bloc on obtient: 
 
-
-  szBlock      | OMP_NUM | MFlops  | MFlops(n=2048) | MFlops(n=512)  | MFlops(n=4096)|
----------------|---------|---------|-------------------------------------------------|
-A.nbCols       |  1      |         |                |                |               |
-512            |  8      |         |                |                |               |
----------------|---------|---------|-------------------------------------------------|
-Speed-up       |         |         |                |                |               |
----------------|---------|---------|-------------------------------------------------|
-
-
+8 threads: 0.179194 secondes, Acceleration = 3.693
+7 threads: 0.183049 secondes, Acceleration = 3.615
+6 threads: 0.199149 secondes, Acceleration = 3.323
+5 threads: 0.23183 secondes, Acceleration = 2.855
+2 threads: 0.370078 secondes, Acceleration = 1.789
+1 thread: 0.656961 secondes, Acceleration ≈ 1
 
 ### Comparaison with BLAS
 
+Temps CPU produit matrice-matrice naif : 0.0281789 secondes
+Rapport = 6.399
 
 # Tips 
 

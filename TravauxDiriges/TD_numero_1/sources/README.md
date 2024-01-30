@@ -63,12 +63,12 @@ k,j,i             | 1.00822 | 2123.74 | 2105.18
 
 
 *Discussion des résultats*
-Do ponto de vista das operaçoes aritmeticas, o tempo deveria ser o mesmo. Porém, os acessos de memória mudam o tempo de retorno, e sua complexidade deve ser considerada para o cálculo da eficiência do código. Isso passa a importar com a multiplicação dos cores das máquinas e da utilização dos diferentes níveis de memória cache.
 
-Buscar fazer as operaçoes com continuidade de memoria para não ter que buscar várias informações em lugares diferentes.
-Os dados de matrizes geralmente são salvos em colunas. Por isso, é mais rápido fazer as operações em colunas. Logo, a execução será mais rápida se aumentarmos a quantidade de operações em colunas. 
+Du point de vue des opérations arithmétiques, le temps d'exécution devrait être le même. Cependant, les accès mémoire changent le temps de retour, et leur complexité doit être prise en compte pour le calcul de l'efficacité du code. Cela devient important avec la multiplication des cœurs des machines et l'utilisation des différents niveaux de mémoire cache.
 
-(Explicar as operações por colunas e os saltos feitos para acessar os elementos do produto caso seja feito por coluna ou por linha) 
+Il est préférable de réaliser les opérations avec une continuité de mémoire afin de ne pas avoir à rechercher plusieurs informations à des endroits différents. Les données des matrices sont généralement stockées par colonnes, par conséquent, il est plus rapide de réaliser les opérations par colonnes. Ainsi, l'exécution sera plus rapide si nous augmentons le nombre d'opérations par colonnes.
+
+*(Explicar as operações por colunas e os saltos feitos para acessar os elementos do produto caso seja feito por coluna ou por linha)*
 
 
 ### OMP sur la meilleure boucle 

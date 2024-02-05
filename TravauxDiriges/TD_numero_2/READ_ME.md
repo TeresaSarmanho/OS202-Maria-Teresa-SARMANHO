@@ -4,9 +4,6 @@
 `pandoc -s --toc README.md --css=./github-pandoc.css -o README.html`
 
 
-
-
-
 ## lscpu
 
 ```
@@ -21,9 +18,6 @@ Caches (sum of all):
   L3:                    4 MiB (1 instance) 
 ```
 
-*Des infos utiles s'y trouvent : nb core, taille de cache*
-
-
 
 ## 1.1 Questions du cours
 
@@ -32,12 +26,14 @@ Caches (sum of all):
 ## 1.3 Ensemble de mandelbrot
 ### Partition équitable par ligne
 
-  n coeurs        | tp(n)    	       | temps de constitution de l'image
+  n coeurs        | tp(n)    	         | temps de constitution de l'image
 ------------------|--------------------|----------------------------------
 1                 |  4.1611488         | 0.053988
-2                 |  2.1148117	       | 0.028347
+2                 |  2.1148117	      | 0.028347
 
-speedup = sequential_time / parallel_time = 
+speedup = sequential_time / parallel_time = 1.967621
 
-    $ for i in $(seq 1 4); do elap=$(OMP_NUM_THREADS=$i ./TestProductOmp.exe|grep "Temps CPU"|cut -d " " -f 7); echo -e "$i\t$elap"; done > timers.out
-```
+*Comment interpréter les résultats obtenus ?*
+
+### Stratégie maître–esclave
+

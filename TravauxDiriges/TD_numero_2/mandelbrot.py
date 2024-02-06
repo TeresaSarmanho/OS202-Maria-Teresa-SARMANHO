@@ -5,7 +5,12 @@ from PIL import Image
 from math import log
 from time import time
 import matplotlib.cm
+from mpi4py import MPI
 
+globCom = MPI.COMM_WORLD.Dup()
+nbp     = globCom.size
+rank    = globCom.rank
+name    = MPI.Get_processor_name()
 
 @dataclass
 class MandelbrotSet:
@@ -47,25 +52,58 @@ class MandelbrotSet:
         return self.max_iterations
 
 
+
 # On peut changer les paramètres des deux prochaines lignes
 mandelbrot_set = MandelbrotSet(max_iterations=50, escape_radius=10)
 width, height = 1024, 1024
 
 scaleX = 3./width
 scaleY = 2.25/height
+
+# cria a tabela para preencher 
 convergence = np.empty((width, height), dtype=np.double)
-# Calcul de l'ensemble de mandelbrot :
+
+# Calcul de l'ensemble de mandelbrot elément par elément :
+# preenche elemento a elemento, pixel a pixel, de forma independente
 deb = time()
 for y in range(height):
-    for x in range(width):
-        c = complex(-2. + scaleX*x, -1.125 + scaleY * y)
-        convergence[x, y] = mandelbrot_set.convergence(c, smooth=True)
+     for x in range(width):
+         c = complex(-2. + scaleX*x, -1.125 + scaleY * y)
+         convergence[x, y] = mandelbrot_set.convergence(c, smooth=True)
 fin = time()
 print(f"Temps du calcul de l'ensemble de Mandelbrot : {fin-deb}")
 
+# Calcul de l'ensemble de mandelbrot par ligne :
+# en packets de lignes divisée par le processeurs
+lines = height // nbp
+
+deb_l = time()
+convergence_l = np.empty((lines, width ), dtype=np.double)
+
+for y_rel in range(lines):
+    for x in range(width):
+        y = rank * lines + y_rel 
+        c = complex(-2. + scaleX*x, -1.125 + scaleY * y)
+        convergence_l[y_rel,x] = mandelbrot_set.convergence(c, smooth=True)
+fin_l = time()
+print(f"Temps du calcul de l'ensemble de Mandelbrot par ligne : {fin_l - deb_l}")
+
+convergence_gathered = None
+if rank == 0:
+    convergence_gathered = np.empty((width, height), dtype=np.double)
+
+globCom.Gather(convergence_l, convergence_gathered)
+
 # Constitution de l'image résultante :
 deb = time()
-image = Image.fromarray(np.uint8(matplotlib.cm.plasma(convergence.T)*255))
+image = Image.fromarray(np.uint8(matplotlib.cm.plasma(convergence_gathered)*255))
 fin = time()
 print(f"Temps de constitution de l'image : {fin-deb}")
 image.show()
+
+if rank == 0:
+    deb = time()
+    image = Image.fromarray(np.uint8(matplotlib.cm.plasma(convergence_gathered)*255))
+    fin = time()
+    print(f"Temps de constitution de l'image : {fin-deb}")
+    image.show()

@@ -54,11 +54,16 @@ $$ S(6) = \frac{0,4+6x1,2}{0,4+1,2}= 4,75$$
 
 ## 1.3 Ensemble de mandelbrot
 ### Partition équitable par ligne
-
+tp(n) correspond au plus grand temps mésuré.
   n coeurs        | tp(n)    	         | temps de constitution de l'image
 ------------------|--------------------|----------------------------------
 1                 |  4.1611488         | 0.053988
 2                 |  2.1148117	      | 0.028347
+4                 |  2.0546007	      | 0.064010
+5                 |  2.6449451	      | 0.045917
+6                 |  2.5818762	      | 0.050048
+7                 |  2.2956218	      | 0.099091
+
 
 $$ speedup = 1.967621 $$
 

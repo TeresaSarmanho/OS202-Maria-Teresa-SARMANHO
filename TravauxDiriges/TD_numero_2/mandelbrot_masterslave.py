@@ -61,44 +61,59 @@ scaleY = 2.25/height
 # Calcul de l'ensemble de mandelbrot par ligne :
 # en packets de lignes divisée par le processeurs
 lines = height // nbp
+convergence = np.empty(width, dtype=np.double)
+convergence_gathered =  np.empty((height, width), dtype=np.double)
 
 # Master
 if rank == 0:
     deb = time()
-    lines_per_pack = 10
-    total_lines = height
-    current_line = 0
-    convergence = np.empty((height, width), dtype=np.double)  # Matriz para armazenar os resultados
-    for slave_rank in range(1, nbp):
-        if current_line < total_lines:
-            series_to_send = []
-            for y_rel in range(lines_per_pack):
-                if current_line < total_lines:
-                    for x in range(width):
-                        y = current_line + y_rel 
-                        c = complex(-2. + scaleX * x, -1.125 + scaleY * y)
-                        convergence[y, x] = mandelbrot_set.convergence(c, smooth=True)
-                    current_line += 1
-            globCom.send(convergence[current_line - lines_per_pack:current_line], dest=slave_rank)  # Enviar parte da matriz para o escravo
-        else:
-            break
-    # Send termination signal to all slave processes
-    for slave_rank in range(1, nbp):
-        globCom.send(None, dest=slave_rank)
+
+    row_ind = 0
+    for i_proc in range(1, nbp):
+        if row_ind < height:
+            globCom.send(row_ind, dest=i_proc)
+            row_ind += 1
+
+    sta = MPI.Status()
+    while row_ind < height:
+        row = globCom.recv(status=sta)
+        source = sta.source
+        globCom.send(row_ind, dest=source)
+        row_ind += 1
+        row_loc = sta.Get_tag()
+        convergence_gathered[row_loc,:] = row
+
+    # Envia sinal de encerramento para todos os escravos
+    for i_proc in range(1, nbp):
+        globCom.send(-1, dest=i_proc)
+    
     fin = time()
-    print(f"Temps d'exécution : {fin - deb}")
+    print(f"Temps du calcul total: {fin-deb}")
 
     # Constitution de l'image résultante :
-    deb = time()
-    image = Image.fromarray(np.uint8(matplotlib.cm.plasma(convergence.T)*255))
-    fin = time()
-    print(f"Temps de constitution de l'image : {fin-deb}")
-    image.show()
+    image = Image.fromarray(np.uint8(matplotlib.cm.plasma(convergence_gathered)*255))
+    img_name = "image_master_slave.png"
+    image.save(img_name)
 
-else:
+
 # Slave
-    while True:
-        series = globCom.recv(source=0)
+else:
+    deb = time()
+    row_loc = globCom.recv(source=0)
+    while (row_loc != -1):
+        # if row_loc == -1:
+        #     break
+        # else:
+        for x in range(width):
+            c = complex(-2. + scaleX*x, -1.125 + scaleY * row_loc)
+            convergence[x] = mandelbrot_set.convergence(c, smooth=True)
+        
+        globCom.send(convergence, dest=0, tag=row_loc)
+        row_loc = globCom.recv(source=0)
+    
+    fin = time()
+    print(f"Temps du calcul rank {rank}: {fin-deb}")
+    
         if series is None: break
         computed_series = []
         for row in series:
